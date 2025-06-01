@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
 
-const feedbackSchema = new mongoose.Schema({
-  customerName: String,
-  rating: Number,
-  comment: String,
-  sentiment: String,
+const adminSchema = new mongoose.Schema({
+  username: String,
+  password: String, // Hashed
 });
 
-module.exports = mongoose.model('Feedback', feedbackSchema);
+module.exports = mongoose.model('Admin', adminSchema);
