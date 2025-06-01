@@ -1,13 +1,10 @@
 const mongoose = require('mongoose');
 
 const menuItemSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, required: true },
   category: String,
-  price: Number,
-  ingredients: [String],
+  price: { type: Number, required: true },
   tags: [String],
-  availability: Boolean,
-  image: String,
 });
 
 module.exports = mongoose.model('MenuItem', menuItemSchema);
