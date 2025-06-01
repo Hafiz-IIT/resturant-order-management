@@ -7,6 +7,12 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+// Import models from their own files (must be present in your repo root)
+const MenuItem = require('./MenuItem');
+const Order = require('./Order');
+const Feedback = require('./Feedback');
+const Admin = require('./Admin');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -21,38 +27,6 @@ mongoose.connect(process.env.MONGO_URI, {
   console.error('MongoDB connection error:', err);
   process.exit(1);
 });
-
-// Schemas & Models
-const MenuItem = mongoose.model('MenuItem', new mongoose.Schema({
-  name: String,
-  category: String,
-  price: Number,
-  ingredients: [String],
-  tags: [String],
-  availability: Boolean,
-  image: String,
-}));
-
-const Order = mongoose.model('Order', new mongoose.Schema({
-  items: [{ name: String, quantity: Number }],
-  status: { type: String, default: 'Placed' },
-  customerName: String,
-  tableNumber: Number,
-  timestamp: { type: Date, default: Date.now },
-  notes: String,
-}));
-
-const Feedback = mongoose.model('Feedback', new mongoose.Schema({
-  customerName: String,
-  rating: Number,
-  comment: String,
-  sentiment: String,
-}));
-
-const Admin = mongoose.model('Admin', new mongoose.Schema({
-  username: String,
-  password: String, // hashed
-}));
 
 // Middleware - Token Auth
 const verifyToken = (req, res, next) => {
