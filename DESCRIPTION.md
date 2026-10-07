@@ -1,0 +1,1 @@
+Full-stack restaurant operations backend covering authentication, menu management, orders, feedback and API workflows.
