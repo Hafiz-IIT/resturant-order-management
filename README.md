@@ -1,76 +1,55 @@
-# Restaurant Order Management API
+# Restaurant Order Management
 
-A Node.js + Express backend for managing restaurant menu items, orders, feedback, and admin authentication. Uses MongoDB for storage.
+<p align="center"><strong>Full-Stack Restaurant Operations Backend</strong><br/><sub>Menu management, order lifecycle, feedback and protected administration.</sub></p>
 
-## Features
+<p align="center"><img src="https://img.shields.io/badge/stack-Node.js%20%7C%20Express%20%7C%20MongoDB-green" alt="Stack"/> <img src="https://img.shields.io/badge/auth-JWT-blue" alt="JWT"/> <img src="https://img.shields.io/badge/status-student%20software%20project-purple" alt="Status"/></p>
 
-- Menu management (CRUD)
-- Order management (create, list, change status)
-- Customer feedback collection
-- Admin authentication (JWT-based)
-- Secure routes for admins
+## What this is
 
-## Getting Started
+A practical restaurant-management application developed as a software engineering project, with a Node.js/Express API and MongoDB persistence.
 
-### 1. Clone the repository
+The repository is intentionally presented as a **working software project**, not as an AI product.
 
-```bash
-git clone https://github.com/Hafiz-IIT/resturant-order-management.git
-cd resturant-order-management
+## Core workflow
+
+```
+Admin authentication
+      ↓
+Protected management routes
+      ↓
+Menu CRUD
+      ↓
+Customer order
+      ↓
+Order status lifecycle
+      ↓
+Feedback / operational records
 ```
 
-### 2. Install dependencies
+## Implemented
 
-```bash
-npm install
-```
+- Node.js / Express backend
+- MongoDB data layer
+- REST API
+- menu CRUD
+- order creation and status management
+- feedback handling
+- JWT-based administrator authentication
+- protected routes
+- frontend integration structure where present
 
-### 3. Configure environment variables
+## Run locally
 
-Copy `.env.example` to `.env` and fill in your values:
-```bash
-cp .env.example .env
-```
-Edit `.env` and set:
-- `MONGO_URI`: Your MongoDB connection string
-- `JWT_SECRET`: A random string for JWT signing
-- `PORT`: (optional) Port to run server (default: 5000)
+Check the repository's package scripts and environment template before starting. Never commit production credentials; use local environment variables.
 
-### 4. Run the server
+## Portfolio value
 
-```bash
-npm start
-```
-or
-```bash
-node server.js
-```
+This project demonstrates the earlier full-stack layer of the portfolio: API design, database-backed workflows, authentication and business-state management.
 
-## API Endpoints
+It complements the later AI/research repositories rather than competing with them.
 
-### Auth
+## Boundary
 
-- `POST /api/login` — Login as admin
-- `POST /api/register-admin` — Register an admin (run once, then remove/comment out for security)
+This is a software project/prototype. No claim is made that it is a production restaurant deployment.
 
-### Menu
-
-- `GET /api/menu` — List menu items
-- `POST /api/menu` — Create menu item (admin only)
-- `PUT /api/menu/:id` — Update menu item (admin only)
-- `DELETE /api/menu/:id` — Delete menu item (admin only)
-
-### Orders
-
-- `POST /api/orders` — Place order
-- `GET /api/orders` — List orders
-- `PUT /api/orders/:id/status` — Update order status (admin only)
-
-### Feedback
-
-- `POST /api/feedback` — Submit feedback
-- `GET /api/feedback` — List feedback (admin only)
-
-## License
-
-MIT
+Related: [Smart City Management](https://github.com/Hafiz-IIT/Smart-City-Management-Management) · [~haf.s__ OS Core](https://github.com/Hafiz-IIT/hafs-os-core)
