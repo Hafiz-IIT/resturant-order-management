@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const orderRoutes = require('./routes/order.routes');
-const menuItemRoutes = require('./routes/menuItem.routes');
+const menuItemRoutes = require('./routes/menuitem.routes');
 const feedbackRoutes = require('./routes/feedback.routes');
 const adminRoutes = require('./routes/admin.routes');
 
