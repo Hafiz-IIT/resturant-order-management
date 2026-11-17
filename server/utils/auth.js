@@ -1,5 +1,7 @@
 const crypto = require('node:crypto');
+const { promisify } = require('node:util');
 
+const scrypt = promisify(crypto.scrypt);
 const SCRYPT_N = 16384;
 const SCRYPT_R = 8;
 const SCRYPT_P = 1;
@@ -20,19 +22,19 @@ function safeEqual(left, right) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-function hashPassword(password) {
+async function hashPassword(password) {
   if (typeof password !== 'string' || password.length < 12) {
     throw new Error('password must contain at least 12 characters');
   }
   const salt = crypto.randomBytes(16);
-  const derived = crypto.scryptSync(password, salt, KEY_LENGTH, {
+  const derived = await scrypt(password, salt, KEY_LENGTH, {
     N: SCRYPT_N, r: SCRYPT_R, p: SCRYPT_P, maxmem: 64 * 1024 * 1024,
   });
   return ['scrypt', SCRYPT_N, SCRYPT_R, SCRYPT_P,
     salt.toString('base64url'), derived.toString('base64url')].join('$');
 }
 
-function verifyPassword(password, encoded) {
+async function verifyPassword(password, encoded) {
   if (typeof password !== 'string' || typeof encoded !== 'string') return false;
   const parts = encoded.split('$');
   if (parts.length !== 6 || parts[0] !== 'scrypt') return false;
@@ -42,7 +44,7 @@ function verifyPassword(password, encoded) {
     const salt = Buffer.from(parts[4], 'base64url');
     const expected = Buffer.from(parts[5], 'base64url');
     if (salt.length !== 16 || expected.length !== KEY_LENGTH) return false;
-    const actual = crypto.scryptSync(password, salt, KEY_LENGTH, {
+    const actual = await scrypt(password, salt, KEY_LENGTH, {
       N: n, r, p, maxmem: 64 * 1024 * 1024,
     });
     return crypto.timingSafeEqual(actual, expected);
