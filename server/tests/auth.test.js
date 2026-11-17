@@ -4,18 +4,18 @@ const { hashPassword, verifyPassword, signToken, verifyToken, safeEqual } = requ
 
 const SECRET = 'test-only-secret-with-at-least-32-bytes-long';
 
-test('password hashes are salted and verify without exposing the password', () => {
+test('password hashes are salted and verify without exposing the password', async () => {
   const password = 'correct horse battery staple';
-  const first = hashPassword(password);
-  const second = hashPassword(password);
+  const first = await hashPassword(password);
+  const second = await hashPassword(password);
   assert.notEqual(first, second);
-  assert.equal(verifyPassword(password, first), true);
-  assert.equal(verifyPassword('wrong password', first), false);
+  assert.equal(await verifyPassword(password, first), true);
+  assert.equal(await verifyPassword('wrong password', first), false);
   assert.equal(first.includes(password), false);
 });
 
-test('password policy rejects short values', () => {
-  assert.throws(() => hashPassword('short'), /at least 12 characters/);
+test('password policy rejects short values', async () => {
+  await assert.rejects(hashPassword('short'), /at least 12 characters/);
 });
 
 test('signed bearer token verifies and expires', () => {
