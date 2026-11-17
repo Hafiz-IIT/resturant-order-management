@@ -71,3 +71,10 @@ test('admin model stores only a non-selected password hash', () => {
   assert.match(model, /passwordHash: \{ type: String, required: true, select: false \}/);
   assert.doesNotMatch(model, /password:\s*\{/);
 });
+
+
+test('admin bootstrap and login routes use rate limiting', () => {
+  const routes = fs.readFileSync(path.join(__dirname, '..', 'routes', 'admin.routes.js'), 'utf8');
+  assert.match(routes, /router\.post\('\/bootstrap', limitBootstrap, adminController\.bootstrapAdmin\)/);
+  assert.match(routes, /router\.post\('\/login', limitLogin, adminController\.login\)/);
+});
