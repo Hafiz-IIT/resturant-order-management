@@ -38,6 +38,8 @@ exports.bootstrapAdmin = async (req, res) => {
   if (parsed.error) return res.status(400).json({ error: parsed.error });
 
   try {
+    // Ensure the unique partial bootstrapLock index exists before the first write.
+    await Admin.init();
     const admin = await Admin.create({
       ...parsed.value,
       passwordHash: hashPassword(parsed.value.password),
@@ -56,6 +58,9 @@ exports.login = async (req, res) => {
   const username = typeof req.body?.username === 'string' ? req.body.username.trim() : '';
   const password = typeof req.body?.password === 'string' ? req.body.password : '';
   if (!username || !password) return res.status(400).json({ error: 'username and password are required' });
+  if (typeof process.env.JWT_SECRET !== 'string' || Buffer.byteLength(process.env.JWT_SECRET, 'utf8') < 32) {
+    return res.status(503).json({ error: 'Admin authentication is not configured' });
+  }
 
   try {
     const admin = await Admin.findOne({ username }).select('+passwordHash');
