@@ -42,7 +42,7 @@ exports.bootstrapAdmin = async (req, res) => {
     await Admin.init();
     const admin = await Admin.create({
       ...parsed.value,
-      passwordHash: hashPassword(parsed.value.password),
+      passwordHash: await hashPassword(parsed.value.password),
       bootstrapLock: true,
     });
     return res.status(201).json({ admin: publicAdmin(admin) });
@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
 
   try {
     const admin = await Admin.findOne({ username }).select('+passwordHash');
-    if (!admin || !verifyPassword(password, admin.passwordHash)) {
+    if (!admin || !(await verifyPassword(password, admin.passwordHash))) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
     const token = signToken(
