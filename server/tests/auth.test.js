@@ -47,3 +47,27 @@ test('order status transitions follow the declared state machine', () => {
   assert.equal(canTransitionOrderStatus('pending', 'served'), false);
   assert.equal(canTransitionOrderStatus('pending', 'pending'), true);
 });
+
+const fs = require('node:fs');
+const path = require('node:path');
+
+test('sensitive API routes are protected by admin authentication', () => {
+  const read = (relative) => fs.readFileSync(path.join(__dirname, '..', relative), 'utf8');
+  const adminRoutes = read('routes/admin.routes.js');
+  const orderRoutes = read('routes/order.routes.js');
+  const menuRoutes = read('routes/menuitem.routes.js');
+  const feedbackRoutes = read('routes/feedback.routes.js');
+
+  assert.match(adminRoutes, /router\.post\('\/', authenticateAdmin, adminController\.createAdmin\)/);
+  assert.match(adminRoutes, /router\.get\('\/', authenticateAdmin, adminController\.getAllAdmins\)/);
+  assert.match(orderRoutes, /router\.get\('\/', authenticateAdmin, orderController\.getAllOrders\)/);
+  assert.match(orderRoutes, /router\.patch\('\/:id\/status', authenticateAdmin, orderController\.updateOrderStatus\)/);
+  assert.match(menuRoutes, /router\.post\('\/', authenticateAdmin, menuItemController\.createMenuItem\)/);
+  assert.match(feedbackRoutes, /router\.get\('\/', authenticateAdmin, feedbackController\.getAllFeedback\)/);
+});
+
+test('admin model stores only a non-selected password hash', () => {
+  const model = fs.readFileSync(path.join(__dirname, '..', 'models', 'Admin.model.js'), 'utf8');
+  assert.match(model, /passwordHash: \{ type: String, required: true, select: false \}/);
+  assert.doesNotMatch(model, /password:\s*\{/);
+});
