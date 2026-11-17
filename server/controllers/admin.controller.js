@@ -83,7 +83,7 @@ exports.createAdmin = async (req, res) => {
   try {
     const admin = await Admin.create({
       ...parsed.value,
-      passwordHash: hashPassword(parsed.value.password),
+      passwordHash: await hashPassword(parsed.value.password),
       bootstrapLock: false,
     });
     return res.status(201).json({ admin: publicAdmin(admin) });
