@@ -36,3 +36,14 @@ test('bootstrap secret comparison is constant-time and type-safe', () => {
   assert.equal(safeEqual('same-secret', 'other-secret'), false);
   assert.equal(safeEqual(undefined, 'same-secret'), false);
 });
+
+const { canTransitionOrderStatus } = require('../utils/orderStatus');
+
+test('order status transitions follow the declared state machine', () => {
+  assert.equal(canTransitionOrderStatus('pending', 'preparing'), true);
+  assert.equal(canTransitionOrderStatus('preparing', 'ready'), true);
+  assert.equal(canTransitionOrderStatus('ready', 'served'), true);
+  assert.equal(canTransitionOrderStatus('served', 'pending'), false);
+  assert.equal(canTransitionOrderStatus('pending', 'served'), false);
+  assert.equal(canTransitionOrderStatus('pending', 'pending'), true);
+});
