@@ -1,4 +1,5 @@
 const Order = require('../models/order.model');
+const { canTransitionOrderStatus } = require('../lib/orderStatus');
 
 exports.getAllOrders = async (req, res, next) => {
   try {
@@ -31,10 +32,13 @@ exports.updateOrderStatus = async (req, res, next) => {
     const allowed = ['pending', 'preparing', 'ready', 'served', 'cancelled'];
     const { status } = req.body || {};
     if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status' });
-    const order = await Order.findByIdAndUpdate(
-      req.params.id, { $set: { status } }, { new: true, runValidators: true }
-    );
+    const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ error: 'Order not found' });
+    if (!canTransitionOrderStatus(order.status, status)) {
+      return res.status(409).json({ error: `Invalid order status transition: ${order.status} -> ${status}` });
+    }
+    order.status = status;
+    await order.save();
     res.json(order);
   } catch (error) {
     if (error.name === 'CastError') return res.status(400).json({ error: 'Invalid order ID' });
