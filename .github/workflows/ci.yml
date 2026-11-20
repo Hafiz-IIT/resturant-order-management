@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  syntax-check:
+  syntax-and-unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,4 +19,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          find . -type f -name "*.js" -not -path "./.git/*" -print0 | xargs -0 -n1 node --check
+          find . -type f -name "*.js" -not -path "./.git/*" -not -path "*/node_modules/*" -print0 | xargs -0 -n1 node --check
+      - name: Run security utility tests
+        run: node --test server/tests/*.test.js
