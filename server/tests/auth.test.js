@@ -64,6 +64,8 @@ test('sensitive API routes are protected by admin authentication', () => {
   assert.match(orderRoutes, /router\.patch\('\/:id\/status', authenticateAdmin, orderController\.updateOrderStatus\)/);
   assert.match(menuRoutes, /router\.post\('\/', authenticateAdmin, menuItemController\.createMenuItem\)/);
   assert.match(feedbackRoutes, /router\.get\('\/', authenticateAdmin, feedbackController\.getAllFeedback\)/);
+  assert.match(orderRoutes, /router\.post\('\/', limitCustomerOrders, orderController\.createOrder\)/);
+  assert.match(feedbackRoutes, /router\.post\('\/', limitFeedback, feedbackController\.createFeedback\)/);
 });
 
 test('admin model stores only a non-selected password hash', () => {
