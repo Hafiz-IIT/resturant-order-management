@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/admin.controller');
+const requireAdminToken = require('../middleware/requireAdminToken');
 
-router.post('/', adminController.createAdmin);
-router.get('/', adminController.getAllAdmins);
-
+router.post('/', requireAdminToken, adminController.createAdmin);
 module.exports = router;
