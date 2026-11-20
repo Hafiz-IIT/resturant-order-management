@@ -1,5 +1,6 @@
 const Order = require('../models/order.model');
 const { canTransitionOrderStatus } = require('../utils/orderStatus');
+const { validateOrderPayload } = require('../utils/requestValidation');
 
 function handleError(res, error) {
   if (error && error.name === 'ValidationError') {
@@ -10,21 +11,18 @@ function handleError(res, error) {
 
 exports.getAllOrders = async (_req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 }).lean();
+    const orders = await Order.find().sort({ createdAt: -1 }).limit(500).lean();
     return res.json(orders);
-  } catch (error) {
-    return handleError(res, error);
-  }
+  } catch (error) { return handleError(res, error); }
 };
 
 exports.createOrder = async (req, res) => {
+  const parsed = validateOrderPayload(req.body);
+  if (parsed.error) return res.status(400).json({ error: parsed.error });
   try {
-    const { customerName, tableNumber, items } = req.body || {};
-    const order = await Order.create({ customerName, tableNumber, items });
+    const order = await Order.create(parsed.value);
     return res.status(201).json(order);
-  } catch (error) {
-    return handleError(res, error);
-  }
+  } catch (error) { return handleError(res, error); }
 };
 
 exports.updateOrderStatus = async (req, res) => {
