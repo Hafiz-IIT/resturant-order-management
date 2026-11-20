@@ -1,4 +1,5 @@
 const MenuItem = require('../models/menuItem.model');
+const { validateMenuItemPayload } = require('../utils/requestValidation');
 
 exports.getAllMenuItems = async (_req, res) => {
   try {
@@ -9,9 +10,10 @@ exports.getAllMenuItems = async (_req, res) => {
 };
 
 exports.createMenuItem = async (req, res) => {
+  const parsed = validateMenuItemPayload(req.body);
+  if (parsed.error) return res.status(400).json({ error: parsed.error });
   try {
-    const { name, category, price, tags } = req.body || {};
-    const item = await MenuItem.create({ name, category, price, tags });
+    const item = await MenuItem.create(parsed.value);
     return res.status(201).json(item);
   } catch (error) {
     if (error && error.name === 'ValidationError') return res.status(400).json({ error: 'Invalid menu item' });
