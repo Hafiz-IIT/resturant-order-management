@@ -42,7 +42,7 @@ test('rate limiter blocks requests above the configured attempt limit', () => {
   assert.equal(invoke(limit, '192.0.2.1').nextCalled, true);
 });
 
-test('rate limits are isolated by client address and bounded by maxKeys', () => {
+test('rate-limit capacity does not evict active client buckets', () => {
   const limit = createRateLimiter({
     maxAttempts: 1,
     windowMs: 1000,
@@ -51,8 +51,27 @@ test('rate limits are isolated by client address and bounded by maxKeys', () => 
   });
 
   assert.equal(invoke(limit, '192.0.2.1').nextCalled, true);
-  assert.equal(invoke(limit, '192.0.2.2').nextCalled, true);
-  assert.equal(invoke(limit, '192.0.2.2').nextCalled, false);
+  const capacityBlocked = invoke(limit, '192.0.2.2');
+  assert.equal(capacityBlocked.nextCalled, false);
+  assert.equal(capacityBlocked.statusCode, 429);
+  assert.equal(capacityBlocked.retryAfter, '1');
+
+  // The first client's active bucket must still be enforced after the
+  // second address attempted to force key-capacity eviction.
+  const originalClientBlocked = invoke(limit, '192.0.2.1');
+  assert.equal(originalClientBlocked.nextCalled, false);
+  assert.equal(originalClientBlocked.statusCode, 429);
+});
+
+test('non-finite limiter clock fails closed', () => {
+  const limit = createRateLimiter({
+    maxAttempts: 1,
+    windowMs: 1000,
+    clock: () => Number.NaN,
+  });
+  const result = invoke(limit, '192.0.2.1');
+  assert.equal(result.nextCalled, false);
+  assert.equal(result.statusCode, 503);
 });
 
 test('invalid rate-limit configuration is rejected', () => {
