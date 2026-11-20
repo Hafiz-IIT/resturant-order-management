@@ -20,3 +20,5 @@ jobs:
         run: |
           set -euo pipefail
           find . -type f -name "*.js" -not -path "./.git/*" -print0 | xargs -0 -n1 node --check
+      - name: Run dependency-free security tests
+        run: node --test server/tests/*.test.js
